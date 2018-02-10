@@ -7,35 +7,18 @@ import android.provider.Settings;
 import android.util.Log;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
-import android.os.Bundle;
-import android.os.Vibrator;
-import android.provider.Settings;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.*;
 
-import java.net.NetworkInterface;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.app.Application;
-import android.bluetooth.BluetoothAdapter;
+
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
-import android.content.Context;
 import android.os.Build;
 
 import com.android.volley.Request;
@@ -44,21 +27,13 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.radiolocus.beaconproberiface.BeaconProberMain;
 import com.radiolocus.beaconproberiface.androidcore.AndroidDeviceOps;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.provider.Settings;
-import android.util.Log;
-import android.widget.Toast;
 
-import java.net.NetworkInterface;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
-import com.radiolocus.beaconproberiface.interfaces.BeaconScannerCallback;
+import com.radiolocus.beaconproberiface.interfaces.RadioLocusBeaconScannerCallback;
 
 /**
  * Created by root on 10/2/18.
@@ -68,23 +43,25 @@ import com.radiolocus.beaconproberiface.interfaces.BeaconScannerCallback;
 @TargetApi(18)
 @SuppressLint("NewApi")
 
-public class BeaconScanner {
+public class RadioLocusBeaconScanner {
 
     // variables for tupleInstance.
-    private final String TAG = "BeaconScanner";
-    private final BeaconScanner that = this;
-    private final BeaconScannerCallback mCallback;
+    private final String TAG = "RadioLocusBeaconScanner";
+    private final RadioLocusBeaconScanner that = this;
+    private final RadioLocusBeaconScannerCallback mCallback;
     private final BluetoothAdapter mBluetoothAdapter;
     private final Handler mHandler;
-    private static final String urlVal = "http://test.radiolocus.com:8000";
+    private static final String RADIOLOCUS_URL_VAL = "http://test.radiolocus.com:8000";
     private RequestQueue queue;
     private static Context mCtxScanner;
     String mDevice, macID, androidID, beaconTupleInstance;
     long currentTimeStamp;
     String testName = "rltest123";
     int rssid=0;
-    //lollipop specific stuff
     private final BluetoothLeScanner scanner;
+
+
+
     private final CountDownTimer reTryStartScanningTimer = new CountDownTimer(5000, 1000) {
         public void onTick(long millisUntilFinished) {}
         public void onFinish () {
@@ -93,7 +70,7 @@ public class BeaconScanner {
         }
     };
 
-    public BeaconScanner(Context Context, BeaconScannerCallback CallBack, BluetoothManager Manager) {
+    public RadioLocusBeaconScanner(Context Context, RadioLocusBeaconScannerCallback CallBack, BluetoothManager Manager) {
         this.mCallback = CallBack;
         this.mBluetoothAdapter = Manager.getAdapter();
         this.mHandler = new Handler(Context.getMainLooper());
@@ -163,14 +140,14 @@ public class BeaconScanner {
         }
 
         //not ours (length is not enough, or type byte is wrong)
-        if (!AltBeaconFactory.isLengthAndTypeOk(scanRecord)) {
+        if (!RlAltBeaconFactory.isLengthAndTypeOk(scanRecord)) {
             return;
         }
 
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-               // that.mCallback.BeaconDiscovered(AltBeaconFactory.getBeaconFromScanrecord(device, scanRecord, rssi));
+               // that.mCallback.BeaconDiscovered(RlAltBeaconFactory.getBeaconFromScanrecord(device, scanRecord, rssi));
             }
         });
     }
@@ -203,7 +180,8 @@ public class BeaconScanner {
                 mDevice=result.getDevice().toString();
                 macID = AndroidDeviceOps.getMacAddr();
                 androidID=getAndroidId();
-                beaconTupleInstance="rlScannerInstance: [ "+testName+ ","+macID+ ","+ androidID+ ","+currentTimeStamp+ ","+mDevice+ ","+rssid+ "]";
+                beaconTupleInstance="rlScannerInstance: ["+testName+ ", "+macID+ ", "+ androidID+ ", " +
+                        ""+currentTimeStamp+ ", "+mDevice+ ", "+rssid+"]";
                 Log.v("=========>",beaconTupleInstance);
 
 
@@ -249,7 +227,7 @@ public class BeaconScanner {
     private void sendTuplesVolley(String res, Context ctx) {
         final String blueTuple =res;
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, urlVal,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, RADIOLOCUS_URL_VAL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -272,7 +250,7 @@ public class BeaconScanner {
         };
         queue = Volley.newRequestQueue(ctx);
         queue.add(stringRequest);
-        //Log.d(TAG, r/es);
+        //Log.d(TAG, res);
 
     }
 

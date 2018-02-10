@@ -7,7 +7,7 @@ package com.radiolocus.beaconproberiface.utility;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothDevice;
 
-public class AltBeacon {
+public class RlAltBeacon {
     private final BluetoothDevice mDevice;
     private final int mType;
     private final String mManufacturer;
@@ -19,7 +19,7 @@ public class AltBeacon {
     private final int mManufacturerReserved;
     private final long mDistance;
 
-    public AltBeacon(BluetoothDevice device, int type, String manufacturer, String beaconCode, String id1, int id2, int id3, int refRSSI, int reserved, long distance) {
+    public RlAltBeacon(BluetoothDevice device, int type, String manufacturer, String beaconCode, String id1, int id2, int id3, int refRSSI, int reserved, long distance) {
         this.mDevice = device;
         this.mType = type;
         this.mManufacturer = manufacturer;

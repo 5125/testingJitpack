@@ -16,20 +16,19 @@ public class MainActivity extends AppCompatActivity implements BeaconScannerCall
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+            startRadioLocusBeaconScan();
+    }
+
+
+    @Override
+    public void startRadioLocusBeaconScan() {
         mBluetoothManager = (BluetoothManager) getApplicationContext().getSystemService(getApplicationContext().BLUETOOTH_SERVICE);
         BeaconScanner bpm = new BeaconScanner(getApplicationContext(),this,mBluetoothManager);
         bpm.StartScanning();
-
-    }
-
-
-    @Override
-    public void startRadioLocusBeaconScan(AltBeacon altBeacon) {
-
     }
 
     @Override
-    public void stopRadioLocusBeaconScan(String s) {
+    public void stopRadioLocusBeaconScan() {
 
     }
 }

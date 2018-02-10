@@ -9,7 +9,7 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.pm.PackageManager;
 
-public class AltBeaconFactory {
+public class RlAltBeaconFactory {
 
     public static boolean isBLESupported(Context context) {
         return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE);
@@ -68,14 +68,14 @@ public class AltBeaconFactory {
     ///
     /// For more details on the beacon specifications see https://github.com/AltBeacon/spec
 
-    public static AltBeacon getBeaconFromScanrecord(BluetoothDevice device, byte[] scanRecord, final int rssi) {
+    public static RlAltBeacon getBeaconFromScanrecord(BluetoothDevice device, byte[] scanRecord, final int rssi) {
 
         String id1 = getStringPart(6, 9, scanRecord) + "-" + getStringPart(10, 11, scanRecord) + "-" + getStringPart(12, 13, scanRecord) + "-" + getStringPart(14, 15, scanRecord) + "-" + getStringPart(16, 21, scanRecord);
         int id2 = ((scanRecord[23] & 0xFF) + ((scanRecord[22] & 0xFF) << 8)); // Uint16
         int id3 = ((scanRecord[25] & 0xFF) + ((scanRecord[24] & 0xFF) << 8)); // Uint16
 
-        long Distance = Math.round(AltBeaconFactory.calculateDistanceFromRssi(rssi, scanRecord[26]));
-        return new AltBeacon(device,scanRecord[1],getManufacturer(scanRecord),getBeaconCode(scanRecord),id1,id2,id3,scanRecord[26],scanRecord[27],Distance);
+        long Distance = Math.round(RlAltBeaconFactory.calculateDistanceFromRssi(rssi, scanRecord[26]));
+        return new RlAltBeacon(device,scanRecord[1],getManufacturer(scanRecord),getBeaconCode(scanRecord),id1,id2,id3,scanRecord[26],scanRecord[27],Distance);
     }
 
     /*
@@ -83,7 +83,7 @@ public class AltBeaconFactory {
     Android appears to add the manufacturer right after the type, and then add the data we give
     thus we need to start the Beacon code
      */
-    public static  byte[]  getAdvertDataFromBeacon(AltBeacon beacon) {
+    public static  byte[]  getAdvertDataFromBeacon(RlAltBeacon beacon) {
         byte[] ret = new byte[24];
         //beaconCode
         int beaconCode = Integer.decode("0x"+ beacon.getBeaconCode());
