@@ -8,5 +8,5 @@ public interface RadioLocusBeaconScannerCallback {
 
         void startRadioLocusBeaconScan();
         void stopRadioLocusBeaconScan();
-
+        void restartRadioLocusBeaconScan();
 }

@@ -4,19 +4,20 @@ import android.bluetooth.BluetoothManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.radiolocus.beaconproberiface.BeaconProberMain;
-import com.radiolocus.beaconproberiface.interfaces.BeaconScannerCallback;
-import com.radiolocus.beaconproberiface.utility.AltBeacon;
-import com.radiolocus.beaconproberiface.utility.BeaconScanner;
 
-public class MainActivity extends AppCompatActivity implements BeaconScannerCallback  {
+import com.radiolocus.beaconproberiface.interfaces.RadioLocusBeaconScannerCallback;
+import com.radiolocus.beaconproberiface.utility.RlAltBeacon;
+import com.radiolocus.beaconproberiface.utility.RadioLocusBeaconScanner;
+
+public class MainActivity extends AppCompatActivity implements   {
     BluetoothManager mBluetoothManager = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-            startRadioLocusBeaconScan();
+           // startRadioLocusBeaconScan();
+
     }
 
 
