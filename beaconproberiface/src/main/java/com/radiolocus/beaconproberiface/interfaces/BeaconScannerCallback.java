@@ -8,7 +8,7 @@ import com.radiolocus.beaconproberiface.utility.AltBeacon;
 
 public interface BeaconScannerCallback {
 
-        void startRadioLocusBeaconScan(AltBeacon beacon);
-        void stopRadioLocusBeaconScan(String data);
+        void startRadioLocusBeaconScan();
+        void stopRadioLocusBeaconScan();
 
 }
