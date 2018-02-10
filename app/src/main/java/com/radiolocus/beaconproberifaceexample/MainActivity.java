@@ -9,23 +9,22 @@ import com.radiolocus.beaconproberiface.interfaces.RadioLocusBeaconScannerCallba
 import com.radiolocus.beaconproberiface.utility.RlAltBeacon;
 import com.radiolocus.beaconproberiface.utility.RadioLocusBeaconScanner;
 
-public class MainActivity extends AppCompatActivity implements   {
+public class MainActivity extends AppCompatActivity
+            implements RadioLocusBeaconScannerCallback  {
     BluetoothManager mBluetoothManager = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-           // startRadioLocusBeaconScan();
+
 
     }
 
 
     @Override
     public void startRadioLocusBeaconScan() {
-        mBluetoothManager = (BluetoothManager) getApplicationContext().getSystemService(getApplicationContext().BLUETOOTH_SERVICE);
-        BeaconScanner bpm = new BeaconScanner(getApplicationContext(),this,mBluetoothManager);
-        bpm.StartScanning();
+
     }
 
     @Override

@@ -33,7 +33,7 @@ import android.os.Handler;
 
 import java.util.Date;
 
-import com.radiolocus.beaconproberiface.interfaces.RadioLocusBeaconScannerCallback;
+import com.radiolocus.beaconproberiface.interfaces.IRadioLocusBeaconScannerCallback;
 
 /**
  * Created by root on 10/2/18.
@@ -48,7 +48,7 @@ public class RadioLocusBeaconScanner {
     // variables for tupleInstance.
     private final String TAG = "RadioLocusBeaconScanner";
     private final RadioLocusBeaconScanner that = this;
-    private final RadioLocusBeaconScannerCallback mCallback;
+    private final IRadioLocusBeaconScannerCallback mCallback;
     private final BluetoothAdapter mBluetoothAdapter;
     private final Handler mHandler;
     private static final String RADIOLOCUS_URL_VAL = "http://test.radiolocus.com:8000";
@@ -70,7 +70,7 @@ public class RadioLocusBeaconScanner {
         }
     };
 
-    public RadioLocusBeaconScanner(Context Context, RadioLocusBeaconScannerCallback CallBack, BluetoothManager Manager) {
+    public RadioLocusBeaconScanner(Context Context, IRadioLocusBeaconScannerCallback CallBack, BluetoothManager Manager) {
         this.mCallback = CallBack;
         this.mBluetoothAdapter = Manager.getAdapter();
         this.mHandler = new Handler(Context.getMainLooper());
