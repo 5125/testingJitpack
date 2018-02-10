@@ -72,7 +72,7 @@ public class BeaconProberMain  extends
     private RequestQueue queue;
     Activity act;
 
-    private void StopScanner() {
+    public void StopScanner() {
         BeaconScanner tmpScanner = mBeaconScanner;
         mBeaconScanner = null;
         if(tmpScanner != null){
@@ -82,7 +82,7 @@ public class BeaconProberMain  extends
 
     }
 
-    private void StartScanner() {
+    public void StartScanner() {
 
         BeaconScanner tmpBeaconScanner = new BeaconScanner(getApplicationContext(), this, this.mBluetoothManager);
         tmpBeaconScanner.Start();
