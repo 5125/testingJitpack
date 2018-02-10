@@ -38,6 +38,12 @@ import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.os.Build;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.radiolocus.beaconproberiface.BeaconProberMain;
 import com.radiolocus.beaconproberiface.androidcore.AndroidDeviceOps;
 import android.os.CountDownTimer;
@@ -63,25 +69,20 @@ import com.radiolocus.beaconproberiface.interfaces.BeaconScannerCallback;
 @SuppressLint("NewApi")
 
 public class BeaconScanner {
-    String[] blue1=new String[100];
-    String[] blue2=new String[100];
-    String[] blue3=new String[100];
+
+    // variables for tupleInstance.
     private final String TAG = "BeaconScanner";
     private final BeaconScanner that = this;
     private final BeaconScannerCallback mCallback;
     private final BluetoothAdapter mBluetoothAdapter;
     private final Handler mHandler;
-    private static Context ctx;
-    private static int device1Count=0;
-    private static int volleyCounter=0;
-    StringBuffer sb=new StringBuffer();
-
+    private static final String urlVal = "http://test.radiolocus.com:8000";
+    private RequestQueue queue;
+    private static Context mCtxScanner;
+    String mDevice, macID, androidID, beaconTupleInstance;
+    long currentTimeStamp;
     String testName = "rltest123";
-
-    private static int device2Count=0;
-    private static int device3Count=0;
-    private static int device4Count=0;
-    private static int device5Count=0;
+    int rssid=0;
     //lollipop specific stuff
     private final BluetoothLeScanner scanner;
     private final CountDownTimer reTryStartScanningTimer = new CountDownTimer(5000, 1000) {
@@ -96,7 +97,7 @@ public class BeaconScanner {
         this.mCallback = CallBack;
         this.mBluetoothAdapter = Manager.getAdapter();
         this.mHandler = new Handler(Context.getMainLooper());
-        ctx=Context;
+        mCtxScanner=Context;
         //With lollipop & newer we can use the new API
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             this.scanner = this.mBluetoothAdapter.getBluetoothLeScanner();
@@ -128,7 +129,7 @@ public class BeaconScanner {
                     boolean retValue = that.mBluetoothAdapter.startLeScan(that.leScanCallback);
                     Log.i(TAG, "start KitKat scanner now : " + retValue);
                     if (!retValue) {
-                        that.mCallback.debugData("SCANNER reTry");
+                        //that.mCallback.debugData("SCANNER reTry");
                         reTryStartScanningTimer.start();
                     }
                 }
@@ -169,7 +170,7 @@ public class BeaconScanner {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                that.mCallback.BeaconDiscovered(AltBeaconFactory.getBeaconFromScanrecord(device, scanRecord, rssi));
+               // that.mCallback.BeaconDiscovered(AltBeaconFactory.getBeaconFromScanrecord(device, scanRecord, rssi));
             }
         });
     }
@@ -191,22 +192,22 @@ public class BeaconScanner {
         mScanCallback = new ScanCallback() {
             public void onScanResult(int callbackType, ScanResult result) {
 
-                String s=result.toString();
+
                 Log.v("ScanScan",result.toString());
-                int rssid=result.getRssi();
+                rssid=result.getRssi();
                 // double getTxPower=result.getTxPower();
                 Date dt = new Date();
-                long timeStamp = dt.getTime();
+                currentTimeStamp = dt.getTime();
                // BeaconActivity ba=new BeaconActivity();
 
-                String mDevice=result.getDevice().toString();
-                AndroidDeviceOps ado = new AndroidDeviceOps();
-                String macID=ado.getMacAddr();
-                String androidID=getAndroidId();
-                String data=testName+","+macID+","+androidID+","+timeStamp+","+mDevice+","+rssid;
-                Log.v("=========>",data);
-                BeaconProberMain ba = new BeaconProberMain();
-                ba.sendData(data,ctx);
+                mDevice=result.getDevice().toString();
+                macID = AndroidDeviceOps.getMacAddr();
+                androidID=getAndroidId();
+                beaconTupleInstance="rlScannerInstance: [ "+testName+ ","+macID+ ","+ androidID+ ","+currentTimeStamp+ ","+mDevice+ ","+rssid+ "]";
+                Log.v("=========>",beaconTupleInstance);
+
+
+                sendTuplesVolley(beaconTupleInstance,mCtxScanner);
 
                 if (result !=null && result.getScanRecord() != null) {
                     that.foundBeacon(result.getDevice(), result.getRssi(), result.getScanRecord().getBytes());
@@ -230,7 +231,7 @@ public class BeaconScanner {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        that.mCallback.debugData("onScanFailed : " + errorCodeTmp);
+                      //  that.mCallback.debugData("onScanFailed : " + errorCodeTmp);
                     }
                 });
                 Log.i(TAG, "onScanFailed : " + errorCode);
@@ -240,10 +241,39 @@ public class BeaconScanner {
     }
 
     public String getAndroidId() {
-        String androidId = Settings.System.getString(ctx.getContentResolver(), Settings.Secure.ANDROID_ID);
+        String androidId = Settings.System.getString(mCtxScanner.getContentResolver(), Settings.Secure.ANDROID_ID);
         return androidId;
 
     }
 
+    private void sendTuplesVolley(String res, Context ctx) {
+        final String blueTuple =res;
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, urlVal,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("rltest123", blueTuple);
+                return params;
+            }
+
+        };
+        queue = Volley.newRequestQueue(ctx);
+        queue.add(stringRequest);
+        //Log.d(TAG, r/es);
+
+    }
 
 }

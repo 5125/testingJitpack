@@ -57,22 +57,19 @@ import com.radiolocus.beaconproberiface.utility.BeaconScanner;
  * Created by root on 10/2/18.
  */
 
-public class BeaconProberMain  extends
+public abstract class BeaconProberMain  extends
         Application implements BeaconScannerCallback {
 
     private final String TAG = "BeaconScannerView";
     private BluetoothManager mBluetoothManager = null;
     private BeaconScanner mBeaconScanner = null;
     private final String TUPLES="MAXTUPLES";
-    private static String macAddress;
-    private static String androidId;
-    private static int tupleCount=0;
     private static Context mContext;
     private static final String urlVal = "http://test.radiolocus.com:8000";
     private RequestQueue queue;
     Activity act;
 
-    public void StopScanner() {
+    public final void stopRadioLocusBeaconScan() {
         BeaconScanner tmpScanner = mBeaconScanner;
         mBeaconScanner = null;
         if(tmpScanner != null){
@@ -82,52 +79,11 @@ public class BeaconProberMain  extends
 
     }
 
-    public void StartScanner() {
-
+    public final void startRadioLocusBeaconScan() {
         BeaconScanner tmpBeaconScanner = new BeaconScanner(getApplicationContext(), this, this.mBluetoothManager);
         tmpBeaconScanner.Start();
         mBeaconScanner = tmpBeaconScanner;
     }
 
 
-    public void sendData(String res, Context ctx) {
-        final String blueTuple =res;
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, urlVal,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("rltest123", blueTuple);
-                return params;
-            }
-
-        };
-        queue = Volley.newRequestQueue(ctx);
-        queue.add(stringRequest);
-        //Log.d(TAG, r/es);
-
-    }
-
-
-    @Override
-    public void BeaconDiscovered(AltBeacon beacon) {
-
-    }
-
-    @Override
-    public void debugData(String data) {
-
-    }
 }

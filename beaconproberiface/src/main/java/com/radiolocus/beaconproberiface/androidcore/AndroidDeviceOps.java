@@ -13,7 +13,7 @@ import java.util.List;
 public class AndroidDeviceOps {
 
 
-    public String getMacAddr() {
+    public static String getMacAddr() {
 
         try {
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
@@ -40,10 +40,6 @@ public class AndroidDeviceOps {
         return "02:00:00:00:00:00";
     }
 
-//    public String getAndroidId() {
-//        String androidId = Settings.System.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
-//        return androidId;
-//
-//    }
+
 
 }
